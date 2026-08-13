@@ -1,8 +1,8 @@
 /* ══════════════════════════════════════════════════════════════════════
-   PhaseParadise — landing page behaviour
+   PhaseParadise, landing page behaviour
 
-   One orchestrated moment (the cycle ring in §3). Everything else is a
-   quiet fade, a sticky nav and a little parallax. All of it steps aside
+   One orchestrated moment, the cycle ring in §3. The rest of the page
+   stays with quiet fades and a little parallax. All of it steps aside
    for prefers-reduced-motion.
    ══════════════════════════════════════════════════════════════════ */
 (function () {
@@ -11,7 +11,6 @@
   var root = document.documentElement;
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  root.classList.add("js");
   if (!reduced.matches) root.classList.add("js-reveal");
 
   var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
@@ -76,8 +75,11 @@
   var arcs    = document.querySelectorAll(".ring__arc");
   var marker  = document.getElementById("ringMarker");
   var dayEl   = document.getElementById("ringDay");
+  var totalEl = document.getElementById("ringTotal");
   var items   = document.querySelectorAll(".plist__item");
   var geometry = document.querySelector(".ring__track");
+
+  if (totalEl) totalEl.textContent = CYCLE_DAYS;
 
   var ringLen = 0;
   var lastPhase = -1;
@@ -86,7 +88,7 @@
   if (geometry && arcs.length) {
     ringLen = geometry.getTotalLength();
 
-    /* every arc carries the whole path — the dash pattern picks the slice */
+    /* every arc carries the whole path, the dash pattern picks the slice */
     arcs.forEach(function (arc, i) {
       var p = PHASES[i];
       arc.dataset.start = (p.start / CYCLE_DAYS) * ringLen;
@@ -233,6 +235,12 @@
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(function () { sizeRunway(); onScroll(); });
   }
+
+  /* a language change rewrites every headline, so measure again */
+  document.addEventListener("pp:i18n", function () {
+    sizeRunway();
+    onScroll();
+  });
 
   /* someone flipping the system setting mid visit */
   var onPrefChange = function () { window.location.reload(); };

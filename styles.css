@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════════
-   PhaseParadise — landing page
+   PhaseParadise, landing page
    ────────────────────────────────────────────────────────────────────
    The page runs light. The app runs dark. Two sections (the cycle and
    the closing) go dark on purpose, so the phase colours can glow the
@@ -34,7 +34,7 @@
   --text-muted: #6B7280;
   --text-muted-dark: #D3D8E5;
 
-  /* accent, per background — the light tint only reads on dark */
+  /* accent, per background. the light tint only reads on dark */
   --accent: var(--phase-follicular-dark);
   --accent-on-dark: var(--phase-follicular);
 
@@ -92,6 +92,21 @@ h1, h2, h3, p { margin: 0; }
   border-radius: 6px;
 }
 
+/* the text arrives from locales/, so the page holds still for one beat
+   rather than showing its empty frame first */
+body { transition: opacity 0.4s var(--ease); }
+.i18n-pending body { opacity: 0; }
+
+.noscript {
+  max-width: 620px;
+  margin: 22vh auto;
+  padding-inline: var(--gut);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -143,7 +158,10 @@ h1, h2, h3, p { margin: 0; }
   font-stretch: 125%;
   line-height: 0.94;
   letter-spacing: -0.015em;
-  text-wrap: balance;
+  /* line breaks come from the locale files. balancing is left off so the
+     browser does not split a line the translator meant to keep whole,
+     while long lines still wrap on narrow screens. */
+  text-wrap: wrap;
 }
 
 .section__title,
@@ -191,9 +209,9 @@ em {
   gap: 20px;
 }
 
-/* the wordmark file carries the strapline underneath — at nav size
-   it only reads as a smudge, so the frame crops it away.
-   both logos are stacked in the same window and cross-fade. */
+/* the wordmark file carries the strapline underneath. at nav size that
+   only reads as a smudge, so the frame crops it away. both logos are
+   stacked in the same window and cross-fade. */
 .nav__brand {
   --logo-h: 37px;   /* full height of the image file */
   --logo-top: 6.6px; /* trimmed off the top */
@@ -215,10 +233,58 @@ em {
 .nav--onDark .nav__logo--light { opacity: 0; }
 .nav--onDark .nav__logo--dark { opacity: 1; }
 
+.nav__end {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2vw, 20px);
+}
+
+/* ─────────────────────────────────────────────── language switcher */
+.lang {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+.lang__btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 5px 2px;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.35s var(--ease);
+}
+.lang__btn:hover { color: var(--text-body); }
+.lang__btn[aria-pressed="true"] {
+  color: var(--text-body);
+  font-weight: 500;
+}
+.lang__sep {
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+.nav--onDark .lang__btn,
+.nav--onDark .lang__sep { color: var(--text-muted-dark); }
+.nav--onDark .lang__btn:hover,
+.nav--onDark .lang__btn[aria-pressed="true"] { color: var(--text-body-dark); }
+
 .nav .badge--sm img { height: 38px; width: auto; }
 @media (max-width: 480px) {
   .nav .badge--sm img { height: 34px; }
-  .nav__brand { --logo-h: 30px; --logo-top: 5.4px; height: 17px; }
+  .nav__brand { --logo-h: 26px; --logo-top: 4.6px; height: 15px; }
+  .lang { font-size: 0.6875rem; }
+}
+/* below this the bar cannot hold all three, and the hero CTA is right
+   underneath anyway */
+@media (max-width: 400px) {
+  .nav .badge--sm { display: none; }
 }
 
 /* ──────────────────────────────────────────────────────────── BADGE */
@@ -320,8 +386,8 @@ em {
   align-items: center;
 }
 
-/* tied to viewport height as well as width, so the phone always
-   peeks over the fold by about a third — on any screen */
+/* tied to viewport height as well as width, so the phone peeks over
+   the fold by about a third on any screen */
 .hero__title {
   font-size: clamp(2.6rem, min(9.6vw, 12.2vh), 7rem);
   line-height: 0.9;
@@ -343,7 +409,7 @@ em {
 }
 .device--hero { --dw: clamp(230px, min(30vw, 34vh), 312px); }
 
-/* hero entrance — pure CSS, so it plays with or without JS */
+/* hero entrance, pure CSS. it waits for the text, then plays once */
 .hero__eyebrow,
 .hero__line,
 .hero__lede,
@@ -357,6 +423,13 @@ em {
 .hero__lede       { animation-delay: 0.34s; }
 .hero__cta        { animation-delay: 0.44s; }
 .hero__stage      { animation-delay: 0.5s; animation-duration: 1.5s; }
+
+/* held until the strings are in, so nobody sees the entrance twice */
+.i18n-pending .hero__eyebrow,
+.i18n-pending .hero__line,
+.i18n-pending .hero__lede,
+.i18n-pending .hero__cta,
+.i18n-pending .hero__stage { animation-play-state: paused; }
 
 @keyframes rise {
   from { opacity: 0; transform: translate3d(0, 34px, 0); }
@@ -533,7 +606,7 @@ em {
 .plist__item[data-phase="3"] { --pc: var(--phase-luteal); }
 .plist__name { color: var(--pc); }
 
-/* enhanced state — only once JS has taken over the scroll */
+/* enhanced state, only once JS has taken over the scroll */
 .js .plist__item { opacity: 0.3; }
 .js .plist__item.is-active {
   opacity: 1;
@@ -883,7 +956,6 @@ em {
   border-radius: 0.15em;
   border: 1px solid var(--phase-spotting);
 }
-.ui__wishItem b { color: #6b7280; font-weight: 400; }
 
 .ui__moments { display: grid; gap: 0.62em; }
 .ui__moment {
