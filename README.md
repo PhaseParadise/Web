@@ -120,12 +120,8 @@ Drop a new file into `images/mock/` and change the `src`. Anything with the
 in `index.html` carries a `<!-- SWAP: … -->` comment saying what it shows. Phone
 size is set per section with `--dw`, and the frame radii scale off it.
 
-**The partner page.** No screenshot of this screen exists yet, so it is built in
-HTML and CSS inside the frame (search `PLACEHOLDER · Partner page` in
-`index.html`). It scales off `--dw` in `em`, so it stays sharp at any size. Once
-a real screenshot exists, replace the whole `.ui` block with a plain `<img>` and
-delete the `.ui__*` rules from `styles.css`. Its wording lives under
-`partner.ui` in the locale files.
+**The partner page.** The front phone uses `images/mock/partner_1.png`. Replace
+that file with a new 1206 × 2622 screenshot when the app screen changes.
 
 **Store links.** Four `href="#"` placeholders, each above a
 `<!-- TODO: replace href … -->` comment: one in the nav, one in the hero, two in
