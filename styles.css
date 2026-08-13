@@ -524,10 +524,11 @@ em {
   height: 100%;
   overflow: visible;
 }
+/* 35 on a 287 outer diameter is the 12.3% the app's day counter uses */
 .ring__track,
 .ring__arc {
   fill: none;
-  stroke-width: 15;
+  stroke-width: 35;
   stroke-linecap: butt;
 }
 .ring__track { stroke: rgba(243, 245, 251, 0.09); }
@@ -542,9 +543,9 @@ em {
 .ring__marker {
   fill: #fff;
   stroke: var(--phase-menstruation);
-  stroke-width: 3;
+  stroke-width: 4;
   opacity: 0;
-  filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.55));
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.55));
   transition: opacity 0.4s var(--ease), stroke 0.7s var(--ease);
 }
 

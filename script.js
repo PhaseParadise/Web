@@ -61,12 +61,12 @@
      section scrolls, a marker rides the edge, the day counts up.
      ══════════════════════════════════════════════════════════ */
 
-  /* a 29 day cycle, in days */
+  /* a 29 day cycle, split the way the app's own cycle bar splits it */
   var PHASES = [
     { start: 0,  days: 5,  color: "#E85150" }, /* menstruation */
-    { start: 5,  days: 8,  color: "#64BC97" }, /* follicular   */
-    { start: 13, days: 3,  color: "#FEBC52" }, /* ovulation    */
-    { start: 16, days: 13, color: "#A28DEA" }  /* luteal       */
+    { start: 5,  days: 12, color: "#64BC97" }, /* follicular   */
+    { start: 17, days: 3,  color: "#FEBC52" }, /* ovulation    */
+    { start: 20, days: 9,  color: "#A28DEA" }  /* luteal       */
   ];
   var CYCLE_DAYS = 29;
 
@@ -92,7 +92,7 @@
     arcs.forEach(function (arc, i) {
       var p = PHASES[i];
       arc.dataset.start = (p.start / CYCLE_DAYS) * ringLen;
-      arc.dataset.len = (p.days / CYCLE_DAYS) * ringLen - 3.5; /* 3.5 = the gap */
+      arc.dataset.len = (p.days / CYCLE_DAYS) * ringLen - 8; /* 8 = the gap */
     });
   }
 
