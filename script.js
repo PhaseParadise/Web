@@ -16,9 +16,9 @@
 
   var clamp = function (v, a, b) { return v < a ? a : v > b ? b : v; };
 
-  /* ─────────────────────────────────────────────────────────── year */
+  /* ───────────────────────────────────────── year, from the visitor's clock */
   var year = document.getElementById("year");
-  if (year) year.textContent = new Date().getFullYear();
+  if (year) year.textContent = "© " + new Date().getFullYear();
 
   /* ─────────────────────────────────────────────── nav, once stuck */
   var nav = document.getElementById("nav");

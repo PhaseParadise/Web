@@ -366,7 +366,9 @@
 <footer class="foot">
   <div class="wrap foot__inner">
     <img class="foot__logo" src="images/logo/logo_stacked_darkMode.png" alt="PhaseParadise" width="1235" height="390" loading="lazy">
-    <p class="foot__note">© <span id="year">2026</span> PhaseParadise. Made for the ones who want to get it right.</p>
+    <!-- the year is filled in from the visitor's clock; without JS the line
+         simply reads "© PhaseParadise" rather than showing a stale year -->
+    <p class="foot__note"><span id="year">©</span> PhaseParadise. Made for the ones who want to get it right.</p>
   </div>
 </footer>
 
