@@ -1097,10 +1097,32 @@ em {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
   text-align: center;
 }
 .foot__logo { height: 46px; width: auto; opacity: 0.9; }
+.foot__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+.foot__link {
+  color: var(--text-primary-dark);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  text-transform: uppercase;
+  opacity: 0.78;
+  transition: opacity 0.2s var(--ease), color 0.2s var(--ease);
+}
+.foot__link:hover,
+.foot__link:focus-visible {
+  color: #fff;
+  opacity: 1;
+}
 .foot__note {
   font-family: var(--font-mono);
   font-size: 0.75rem;
