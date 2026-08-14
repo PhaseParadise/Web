@@ -1,101 +1,138 @@
-# PhaseParadise, landing page
+# PhaseParadise Website
 
-A single-page site in plain HTML, CSS and JavaScript. No framework, no build
-step. Open `index.html` in a browser, or serve the folder with any static
-server. Both work.
+The marketing website for PhaseParadise, an iOS and Android app that helps men
+understand their partner's cycle and support her through its four phases.
+
+**Live at [phaseparadise.app](https://phaseparadise.app)**
+
+![No build step](https://img.shields.io/badge/build-none-brightgreen)
+![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
+![Hosting](https://img.shields.io/badge/hosting-GitHub%20Pages-blue)
+![Languages](https://img.shields.io/badge/languages-EN%20%7C%20DE-blue)
+
+## Description
+
+A static three-page website: a one-page landing page plus a privacy policy and
+an imprint. It is written in plain HTML, CSS and JavaScript with no framework,
+no package manager and no build step. What is in the repository is exactly what
+gets served.
+
+Key points:
+
+- **Two languages.** English and German. Every visible string on the landing
+  page lives in `assets/locales/`, not in the HTML.
+- **No external requests.** Fonts are self-hosted, so the site does not call out
+  to Google Fonts or any CDN at runtime.
+- **Works offline.** Opening `index.html` from disk shows the full site.
+- **Landing page sections:** `#hero`, `#benefits`, `#phases`, `#insights`,
+  `#partner-page`, `#cta`.
+
+## Screenshot
+
+![PhaseParadise landing page](assets/images/og/og-image.png)
+
+## Requirements
+
+A text editor and a browser. Nothing else.
+
+A static web server is optional. Python 3 ships with macOS and most Linux
+distributions and is enough if you want one.
+
+## Running locally
+
+Clone the repository and open the entry page:
+
+```bash
+git clone <repository-url>
+cd Web
+open index.html          # macOS; use `xdg-open` on Linux or `start` on Windows
+```
+
+To serve it over HTTP instead, for example to test the legal pages at their real
+URLs:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open <http://localhost:8000>.
+
+There is no install step, no watch task and no compilation. Edit a file, reload
+the browser.
+
+## Project structure
 
 ```
 .
-├── CNAME
-├── index.html
-├── policy/
-│   └── index.html
-├── imprint/
-│   └── index.html
+├── CNAME                   custom domain for GitHub Pages
+├── .nojekyll               tells GitHub Pages to serve files as-is
+├── index.html              landing page
+├── policy/index.html       privacy policy (standalone, English only)
+├── imprint/index.html      imprint (standalone, English only)
 └── assets/
     ├── css/
-    │   ├── main.css       landing page visual system
-    │   └── legal.css      shared UI for /policy/ and /imprint/
+    │   ├── main.css        landing page visual system
+    │   └── legal.css       shared UI for /policy/ and /imprint/
     ├── js/
-    │   ├── i18n.js        language loading and DOM binding
-    │   └── main.js        nav, reveal, parallax and cycle ring behaviour
+    │   ├── i18n.js         language loading and DOM binding
+    │   └── main.js         nav, reveal, parallax and cycle ring behaviour
     ├── locales/
-    │   ├── en.js          English strings and fallback copy
-    │   └── de.js          German strings
-    ├── images/
-    │   ├── badges/        store badges
-    │   ├── logo/          wordmark, stacked wordmark and icon
-    │   ├── mock/          app screenshots, iPhone 16 Pro @3x
-    │   └── og/            link-preview image
-    └── fonts/             self-hosted webfonts
+    │   ├── en.js           English strings, and the fallback for every language
+    │   └── de.js           German strings
+    ├── fonts/              self-hosted Archivo and IBM Plex Mono (woff2)
+    └── images/
+        ├── badges/         App Store and Google Play badges (SVG)
+        ├── logo/           wordmark, stacked wordmark and icon
+        ├── mock/           app screenshots, 1206 × 2622 (iPhone 16 Pro @3x)
+        └── og/             link preview image, 1200 × 630
 ```
 
-## The six sections
+## Usage
 
-`#hero` · `#benefits` · `#phases` · `#insights` · `#partner-page` · `#cta`
+### Editing text
 
-The page runs light. `#phases` and `#cta` go dark on purpose, so the phase
-colours glow the way they do inside the app. The nav bar notices those two
-sections and swaps to the dark wordmark while it sits over them.
-
-## The one animated moment
-
-`#phases` is the signature: a squircle ring, the same shape as the app icon and
-the day counter on the today screen, that draws itself in one phase colour at a
-time as you scroll. A marker rides the edge, the day counts 1 to 29, and the
-matching line lights up. Everything else on the page is a quiet fade.
-
-The cycle is defined in `assets/js/main.js`:
-
-```js
-var PHASES = [
-  { start: 0,  days: 5,  color: "#E85150" }, // menstruation
-  { start: 5,  days: 8,  color: "#64BC97" }, // follicular
-  { start: 13, days: 3,  color: "#FEBC52" }, // ovulation
-  { start: 16, days: 13, color: "#A28DEA" }  // luteal
-];
-var CYCLE_DAYS = 29;
-```
-
-`RUNWAY`, in the same file, is how many extra viewports of scrolling the ring
-takes to fill. Raise it for a slower reveal, lower it for a quicker one.
-
-Under `prefers-reduced-motion: reduce` the runway is dropped, the ring is drawn
-whole, and all four phase lines show at once.
-
-## Languages
-
-No visible text sits in `index.html`. Every string comes from `assets/locales/`,
-and elements pick theirs up through a `data-i18n` attribute naming the key:
+No visible text is written in `index.html`. Elements name a key, and `i18n.js`
+fills them in:
 
 ```html
 <p class="lede" data-i18n="hero.lede"></p>
 <img src="…" data-i18n-alt="hero.shotAlt" alt="">
 ```
 
-| attribute | writes to |
+To change wording, edit the matching key in **both** `assets/locales/en.js` and
+`assets/locales/de.js`.
+
+| Attribute | Sets |
 | --- | --- |
 | `data-i18n` | the element's text |
-| `data-i18n-rich` | its text, with `*accent*` and line breaks |
-| `data-i18n-alt` | `alt` |
-| `data-i18n-aria` | `aria-label` |
-| `data-i18n-content` | `content`, for the meta tags |
+| `data-i18n-rich` | the element's text, with `*accent*` and line breaks |
+| `data-i18n-alt` | the `alt` attribute |
+| `data-i18n-aria` | the `aria-label` attribute |
+| `data-i18n-content` | the `content` attribute, used for meta tags |
 
-Inside a string, `*word*` paints a word in the accent colour and `\n` starts a
-new line. Headlines break where the locale file says they break, which is why
-`text-wrap: balance` is switched off for them.
+Two conventions apply inside a string:
 
-**Which language a visitor gets.** An earlier choice, kept in `localStorage`
-under `phaseparadise-lang`, wins. Otherwise the browser decides: German gets
-German, everyone else gets English. The switcher sits in the header as `DE / EN`
-and builds itself from the list in `assets/js/i18n.js`.
+- `*word*` renders the word in the green accent colour.
+- `\n` starts a new line in a headline.
 
-**When something goes wrong.** English loads with the page itself, so it is
-always in hand. A language file that fails to arrive, or a key nobody
-translated yet, falls back to English rather than leaving a gap.
+Headlines break exactly where the locale file says. This is why
+`text-wrap: balance` is switched off for them in `main.css`.
 
-**Adding a language.** Copy `assets/locales/en.js`, translate the values, and add one
-line near the top of `assets/js/i18n.js`:
+### Language selection
+
+1. A previous choice stored in `localStorage` under `phaseparadise-lang` wins.
+2. Otherwise the browser language decides: German gets German, everything else
+   gets English.
+
+English is bundled with the page and acts as the safety net. If a language file
+fails to load, or a key has not been translated yet, English is shown instead of
+an empty element.
+
+### Adding a language
+
+1. Copy `assets/locales/en.js` to `assets/locales/<code>.js` and translate the
+   values. Keep the keys identical; any key you leave out falls back to English.
+2. Add one line to `LANGS` at the top of `assets/js/i18n.js`:
 
 ```js
 var LANGS = [
@@ -105,66 +142,161 @@ var LANGS = [
 ];
 ```
 
-The switcher, the `lang` attribute and `og:locale` follow on their own. Keys
-must match `en.js` exactly; anything you leave out shows in English.
+The header switcher, the `lang` attribute and the `og:locale` meta tag update
+themselves from that list.
 
-The meta tags in `index.html` carry the English wording as a starting value and
-are rewritten once a language is picked. They stay in the markup so link
-previews keep working for scrapers that never run JavaScript.
+`policy/` and `imprint/` are standalone English pages and are not part of this
+system.
 
-## Swapping things out
+### Replacing screenshots
 
-**Screenshots.** Every phone is the same markup:
+Every phone on the page uses the same markup:
 
 ```html
 <div class="device">
   <div class="device__frame">
     <div class="device__screen">
-      <img src="assets/images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
+      <img src="assets/images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt=""
+           width="1206" height="2622">
     </div>
   </div>
 </div>
 ```
 
-Drop a new file into `assets/images/mock/` and change the `src`. Anything with the
-402 : 874 aspect ratio of an iPhone 16 Pro fits without cropping. Each `<img>`
-in `index.html` carries a `<!-- SWAP: … -->` comment saying what it shows. Phone
-size is set per section with `--dw`, and the frame radii scale off it.
+Drop a new file into `assets/images/mock/` and change the `src`. Screenshots
+with the 402 : 874 aspect ratio of an iPhone 16 Pro fit without cropping.
 
-**The partner page.** The front phone uses `assets/images/mock/partner_1.png`. Replace
-that file with a new 1206 × 2622 screenshot when the app screen changes.
+Each of these images has a `<!-- SWAP: … -->` comment above it naming the screen
+it shows, because the file names alone do not say which is which:
 
-**Store links.** The App Store and Google Play badges point to the live store
-listings. The Android bundle id still carries the old PhaseBloom name:
-`com.monkeyttack.phaseBloom`.
+| Comment | File |
+| --- | --- |
+| today screen | `home_1.png` |
+| what is shaping her day | `home_3.png` |
+| check-in history | `checkin_1.png` |
+| five day outlook | `home_2.png` |
+| reminders | `reminders_1.png` |
+| a saved moment in the calendar | `calendar_2.png` |
+| partner page | `partner_1.png` |
 
-**Store badges.** `assets/images/badges/app-store.svg` and `google-play.svg` are drawn
-to Apple's and Google's proportions. Replace them with the official downloads
-from Apple's Marketing Resources and Google's Play Badge generator before you
-publish. Same filenames, same 180 × 60 box, nothing else changes. Both stores
+Phone size is set per section through the `--dw` custom property. The frame
+corner radii scale off it, so changing one value keeps the proportions.
+
+### The cycle ring
+
+`#phases` contains the one animated moment on the page: a squircle ring, the
+same shape as the app icon and the day counter on the today screen, that draws
+itself in one phase colour at a time as you scroll.
+
+It is configured near the top of the ring code in `assets/js/main.js`:
+
+```js
+var PHASES = [
+  { start: 0,  days: 5,  color: "#E85150" }, // menstruation
+  { start: 5,  days: 12, color: "#64BC97" }, // follicular
+  { start: 17, days: 3,  color: "#FEBC52" }, // ovulation
+  { start: 20, days: 9,  color: "#A28DEA" }  // luteal
+];
+var CYCLE_DAYS = 29;
+```
+
+The day counts were measured from the cycle bar inside the app, so the website
+and the app show the same split.
+
+`RUNWAY`, further down the same file, controls how many extra viewport heights
+of scrolling the ring takes to fill. It is currently `2.6`. Raise it for a
+slower reveal, lower it for a quicker one.
+
+Under `prefers-reduced-motion: reduce` the scroll runway is removed, the ring is
+drawn complete, and all four phase descriptions are shown at once.
+
+### Colours
+
+All colour tokens are defined at the top of `assets/css/main.css`. Two rules
+apply:
+
+- **Green** (`--phase-follicular`) is the accent colour. On light backgrounds it
+  is used through `--accent`, which points at `--phase-follicular-dark`, because
+  the lighter tint does not reach 3:1 contrast on `#F8F9FA`.
+- **Orange** (`--brand-accent`) is reserved for the call to action: badge hover
+  glow, focus rings, text selection and the wordmark. It is used nowhere else.
+
+The page runs light. `#phases` and `#cta` are dark on purpose, so the phase
+colours glow the way they do inside the app. The nav bar detects those two
+sections and swaps to the dark wordmark while it sits over them.
+
+### Store links and badges
+
+The badges link to the live listings:
+
+- App Store: `apps.apple.com/at/app/phasebloom-cycle-tracker/id6761731649`
+- Google Play: `play.google.com/store/apps/details?id=com.monkeyttack.phaseBloom`
+
+The store listings currently use the name *PhaseBloom* while the website brands
+the product as *PhaseParadise*.
+
+The badge graphics in `assets/images/badges/` are SVGs drawn to Apple's and
+Google's proportions, not the official downloads. Replacing them with the
+official files from Apple Marketing Resources and the Google Play badge
+generator is a straight file swap: same names, same 180 × 60 box. Both stores
 also publish German artwork, and the German alt text already reads *Laden im App
-Store* and *Jetzt bei Google Play*, so the badge image is the only piece left to
-swap per language.
+Store* and *Jetzt bei Google Play*.
 
-**Link preview.** `assets/images/og/og-image.png` is referenced by the `og:image` and
-`twitter:image` tags. Regenerate it however you like at 1200 × 630.
+## Deployment
 
-## Colours
+The site is served by GitHub Pages from the default branch. Pushing to `main`
+publishes it.
 
-All tokens sit at the top of `assets/css/main.css`. Two rules govern their use:
+Two files control this:
 
-- **Green** (`--phase-follicular`) is the accent. On light backgrounds it goes
-  through `--accent`, which points at `--phase-follicular-dark`, because the
-  lighter tint does not carry enough contrast on `#F8F9FA`.
-- **Orange** (`--brand-accent`) belongs to the call to action: the badge hover
-  glow, focus rings, text selection, and the wordmark. It appears nowhere else.
+- `CNAME` holds the custom domain, `phaseparadise.app`.
+- `.nojekyll` stops GitHub Pages from running Jekyll, so files and directories
+  beginning with an underscore are served unchanged.
 
-## Notes
+There is nothing to build before deploying.
 
-- Fonts are self-hosted in `assets/fonts/`: Archivo (variable, with the width
-  axis, and display type sits at `font-stretch: 125%` for the brand's wide
-  squared look) and IBM Plex Mono for labels.
-- The copyright year comes from the visitor's clock, so it never needs touching.
+## Accessibility and browser support
+
+- Keyboard focus is visible on every interactive element, and a skip link is the
+  first tab stop.
+- `prefers-reduced-motion: reduce` disables the parallax, the scroll reveals and
+  the ring animation.
 - Checked for horizontal overflow from 320 px to 1920 px in both languages.
-- Without JavaScript the page cannot fetch its own text, so it shows a short
-  note instead.
+- The `lang` attribute follows the selected language.
+- JavaScript is required. Because the text is loaded from the locale files, the
+  page shows a short note when scripting is off.
+
+## Support
+
+Questions about the app or the website: <phaseparadise@gmail.com>
+
+For problems with the website itself, open an issue in this repository.
+
+## Roadmap
+
+Known gaps, in no particular order:
+
+- Replace the recreated store badges with the official artwork.
+- Serve German store badge artwork alongside the German copy.
+- Decide whether the store listings and the website should share one product
+  name.
+- Translate `policy/` and `imprint/` into German, or state on those pages that
+  they are English only.
+
+## Authors and acknowledgment
+
+Maintained by the repository owner. Contact through the support address above.
+
+Archivo and IBM Plex Mono are open source typefaces published through Google
+Fonts. See `assets/fonts/README.md` for the self-hosting note.
+
+## License
+
+No license has been declared for this repository. Without one, default copyright
+applies and no reuse rights are granted. Add a `LICENSE` file if that is not the
+intent.
+
+## Project status
+
+Actively maintained. The site is live and content changes are made as the app
+develops.
