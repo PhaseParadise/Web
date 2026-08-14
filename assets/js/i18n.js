@@ -1,11 +1,11 @@
 /* ══════════════════════════════════════════════════════════════════════
    PhaseParadise, language handling
 
-   Every visible string lives in locales/<code>.js. English ships with
+   Every visible string lives in assets/locales/<code>.js. English ships with
    the page and doubles as the safety net: if any other language file is
    missing or broken, the whole page simply stays English.
 
-   To add a language: drop in locales/<code>.js and add one line to
+   To add a language: drop in assets/locales/<code>.js and add one line to
    LANGS below. The switcher in the header builds itself from that list.
    ══════════════════════════════════════════════════════════════════ */
 (function () {
@@ -19,7 +19,7 @@
   /* loaded with the page, and what everything falls back to */
   var BASE = "en";
   var STORAGE_KEY = "phaseparadise-lang";
-  var DIR = "locales/";
+  var DIR = "assets/locales/";
   var GIVE_UP_AFTER = 4000;
 
   var root = document.documentElement;

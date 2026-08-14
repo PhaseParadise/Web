@@ -168,7 +168,9 @@ window.PPLocale.en = {
   "footer": {
     "logoAlt": "PhaseParadise",
     "linksLabel": "Footer links",
-    "policy": "Policy",
+    "privacy": "Privacy",
+    "imprint": "Impressum",
+    "support": "Support",
     "note": "PhaseParadise. Made for the ones who want to get it right."
   }
 };

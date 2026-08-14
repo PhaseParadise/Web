@@ -5,18 +5,29 @@ step. Open `index.html` in a browser, or serve the folder with any static
 server. Both work.
 
 ```
-index.html      structure, with the text left out
-styles.css      the whole visual system
-i18n.js         picks a language and writes it into the markup
-script.js       scroll behaviour (nav, reveals, parallax, the cycle ring)
-locales/
-  en.js         English strings, and the safety net for every other language
-  de.js         German strings
-images/
-  mock/         app screenshots, iPhone 16 Pro @3x (1206 × 2622)
-  logo/         wordmark, stacked wordmark, icon
-  badges/       store badges (SVG)
-  og/           link-preview image (1200 × 630)
+.
+├── CNAME
+├── index.html
+├── policy/
+│   └── index.html
+├── imprint/
+│   └── index.html
+└── assets/
+    ├── css/
+    │   ├── main.css       landing page visual system
+    │   └── legal.css      shared UI for /policy/ and /imprint/
+    ├── js/
+    │   ├── i18n.js        language loading and DOM binding
+    │   └── main.js        nav, reveal, parallax and cycle ring behaviour
+    ├── locales/
+    │   ├── en.js          English strings and fallback copy
+    │   └── de.js          German strings
+    ├── images/
+    │   ├── badges/        store badges
+    │   ├── logo/          wordmark, stacked wordmark and icon
+    │   ├── mock/          app screenshots, iPhone 16 Pro @3x
+    │   └── og/            link-preview image
+    └── fonts/             self-hosted webfonts
 ```
 
 ## The six sections
@@ -34,7 +45,7 @@ the day counter on the today screen, that draws itself in one phase colour at a
 time as you scroll. A marker rides the edge, the day counts 1 to 29, and the
 matching line lights up. Everything else on the page is a quiet fade.
 
-The cycle is defined in `script.js`:
+The cycle is defined in `assets/js/main.js`:
 
 ```js
 var PHASES = [
@@ -54,8 +65,8 @@ whole, and all four phase lines show at once.
 
 ## Languages
 
-No visible text sits in `index.html`. Every string comes from `locales/`, and
-elements pick theirs up through a `data-i18n` attribute naming the key:
+No visible text sits in `index.html`. Every string comes from `assets/locales/`,
+and elements pick theirs up through a `data-i18n` attribute naming the key:
 
 ```html
 <p class="lede" data-i18n="hero.lede"></p>
@@ -77,14 +88,14 @@ new line. Headlines break where the locale file says they break, which is why
 **Which language a visitor gets.** An earlier choice, kept in `localStorage`
 under `phaseparadise-lang`, wins. Otherwise the browser decides: German gets
 German, everyone else gets English. The switcher sits in the header as `DE / EN`
-and builds itself from the list in `i18n.js`.
+and builds itself from the list in `assets/js/i18n.js`.
 
 **When something goes wrong.** English loads with the page itself, so it is
 always in hand. A language file that fails to arrive, or a key nobody
 translated yet, falls back to English rather than leaving a gap.
 
-**Adding a language.** Copy `locales/en.js`, translate the values, and add one
-line near the top of `i18n.js`:
+**Adding a language.** Copy `assets/locales/en.js`, translate the values, and add one
+line near the top of `assets/js/i18n.js`:
 
 ```js
 var LANGS = [
@@ -109,25 +120,25 @@ previews keep working for scrapers that never run JavaScript.
 <div class="device">
   <div class="device__frame">
     <div class="device__screen">
-      <img src="images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
+      <img src="assets/images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
     </div>
   </div>
 </div>
 ```
 
-Drop a new file into `images/mock/` and change the `src`. Anything with the
+Drop a new file into `assets/images/mock/` and change the `src`. Anything with the
 402 : 874 aspect ratio of an iPhone 16 Pro fits without cropping. Each `<img>`
 in `index.html` carries a `<!-- SWAP: … -->` comment saying what it shows. Phone
 size is set per section with `--dw`, and the frame radii scale off it.
 
-**The partner page.** The front phone uses `images/mock/partner_1.png`. Replace
+**The partner page.** The front phone uses `assets/images/mock/partner_1.png`. Replace
 that file with a new 1206 × 2622 screenshot when the app screen changes.
 
-**Store links.** Four `href="#"` placeholders, each above a
-`<!-- TODO: replace href … -->` comment: one in the nav, one in the hero, two in
-the closing section.
+**Store links.** The App Store and Google Play badges point to the live store
+listings. The Android bundle id still carries the old PhaseBloom name:
+`com.monkeyttack.phaseBloom`.
 
-**Store badges.** `images/badges/app-store.svg` and `google-play.svg` are drawn
+**Store badges.** `assets/images/badges/app-store.svg` and `google-play.svg` are drawn
 to Apple's and Google's proportions. Replace them with the official downloads
 from Apple's Marketing Resources and Google's Play Badge generator before you
 publish. Same filenames, same 180 × 60 box, nothing else changes. Both stores
@@ -135,12 +146,12 @@ also publish German artwork, and the German alt text already reads *Laden im App
 Store* and *Jetzt bei Google Play*, so the badge image is the only piece left to
 swap per language.
 
-**Link preview.** `images/og/og-image.png` is referenced by the `og:image` and
+**Link preview.** `assets/images/og/og-image.png` is referenced by the `og:image` and
 `twitter:image` tags. Regenerate it however you like at 1200 × 630.
 
 ## Colours
 
-All tokens sit at the top of `styles.css`. Two rules govern their use:
+All tokens sit at the top of `assets/css/main.css`. Two rules govern their use:
 
 - **Green** (`--phase-follicular`) is the accent. On light backgrounds it goes
   through `--accent`, which points at `--phase-follicular-dark`, because the
@@ -150,9 +161,9 @@ All tokens sit at the top of `styles.css`. Two rules govern their use:
 
 ## Notes
 
-- Fonts come from Google Fonts: Archivo (variable, with the width axis, and
-  display type sits at `font-stretch: 125%` for the brand's wide squared look)
-  and IBM Plex Mono for labels.
+- Fonts are self-hosted in `assets/fonts/`: Archivo (variable, with the width
+  axis, and display type sits at `font-stretch: 125%` for the brand's wide
+  squared look) and IBM Plex Mono for labels.
 - The copyright year comes from the visitor's clock, so it never needs touching.
 - Checked for horizontal overflow from 320 px to 1920 px in both languages.
 - Without JavaScript the page cannot fetch its own text, so it shows a short
