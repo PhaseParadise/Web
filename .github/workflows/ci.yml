@@ -18,7 +18,7 @@ jobs:
     name: Screenshots aktuell
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Only the check needs no encoder, but the failure message tells you
       # to run the build, and that is easier to trust if CI could have.
@@ -35,7 +35,7 @@ jobs:
     name: Performance-Budget
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-node@v4
         with:
