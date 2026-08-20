@@ -12,8 +12,8 @@ understand their partner's cycle and support her through its four phases.
 
 ## Description
 
-A static three-page website: a one-page landing page plus a privacy policy and
-an imprint. It is written in plain HTML, CSS and JavaScript with no framework,
+A static website: a one-page landing page plus a privacy policy in English and
+German, and an imprint. It is written in plain HTML, CSS and JavaScript with no framework,
 no package manager and no build step. What is in the repository is exactly what
 gets served.
 
@@ -67,7 +67,8 @@ the browser.
 ├── CNAME                   custom domain for GitHub Pages
 ├── .nojekyll               tells GitHub Pages to serve files as-is
 ├── index.html              landing page
-├── policy/index.html       privacy policy (standalone, English only)
+├── policy/index.html       privacy policy, English (standalone)
+├── policy/de/index.html    privacy policy, German (standalone)
 ├── imprint/index.html      imprint (standalone, English only)
 └── assets/
     ├── css/
@@ -109,6 +110,7 @@ To change wording, edit the matching key in **both** `assets/locales/en.js` and
 | `data-i18n-alt` | the `alt` attribute |
 | `data-i18n-aria` | the `aria-label` attribute |
 | `data-i18n-content` | the `content` attribute, used for meta tags |
+| `data-i18n-href` | the `href` attribute, used to point a link at the right language |
 
 Two conventions apply inside a string:
 
@@ -145,8 +147,14 @@ var LANGS = [
 The header switcher, the `lang` attribute and the `og:locale` meta tag update
 themselves from that list.
 
-`policy/` and `imprint/` are standalone English pages and are not part of this
-system.
+`policy/` and `imprint/` are standalone pages and are not part of this system.
+The privacy policy exists twice, as `policy/` and `policy/de/`, each a complete
+document that carries its own copy. The two are linked to each other by an
+EN / DE pair in the top row and by `hreflang` tags in the head, and the footer
+link on the landing page points at whichever one matches the chosen language
+through `footer.privacyHref`. Keeping legal text out of the JavaScript layer
+means it still reads correctly with scripting switched off. The imprint is
+English only.
 
 ### Replacing screenshots
 
@@ -280,8 +288,10 @@ Known gaps, in no particular order:
 - Serve German store badge artwork alongside the German copy.
 - Decide whether the store listings and the website should share one product
   name.
-- Translate `policy/` and `imprint/` into German, or state on those pages that
-  they are English only.
+- Translate `imprint/` into German the way `policy/de/` was done, or state on
+  the page that it is English only.
+- When the privacy policy changes, change it in both `policy/` and `policy/de/`
+  and move the "Last updated" date on both.
 
 ## Authors and acknowledgment
 

@@ -116,6 +116,7 @@
     bind("data-i18n-alt", function (el, v) { el.setAttribute("alt", v); });
     bind("data-i18n-aria", function (el, v) { el.setAttribute("aria-label", v); });
     bind("data-i18n-content", function (el, v) { el.setAttribute("content", v); });
+    bind("data-i18n-href", function (el, v) { el.setAttribute("href", v); });
 
     var title = read("meta.title");
     if (title) document.title = title;

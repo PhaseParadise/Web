@@ -168,7 +168,8 @@ window.PPLocale.de = {
   "footer": {
     "logoAlt": "PhaseParadise",
     "linksLabel": "Footer-Links",
-    "privacy": "Privacy",
+    "privacy": "Datenschutz",
+    "privacyHref": "policy/de/",
     "imprint": "Impressum",
     "support": "Support",
     "note": "PhaseParadise. Für alle, die es richtig machen wollen."
