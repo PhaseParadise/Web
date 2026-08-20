@@ -84,7 +84,8 @@ the browser.
     └── images/
         ├── badges/         App Store and Google Play badges (SVG)
         ├── logo/           wordmark, stacked wordmark and icon
-        ├── mock/           app screenshots, 1206 × 2622 (iPhone 16 Pro @3x)
+        ├── mock/           app screenshots, one folder per language
+        │                   (`de/`, `en/`), 1206 × 2622 (iPhone 16 Pro @3x)
         └── og/             link preview image, 1200 × 630
 ```
 
@@ -134,7 +135,9 @@ an empty element.
 
 1. Copy `assets/locales/en.js` to `assets/locales/<code>.js` and translate the
    values. Keep the keys identical; any key you leave out falls back to English.
-2. Add one line to `LANGS` at the top of `assets/js/i18n.js`:
+2. Copy `assets/images/mock/en/` to `assets/images/mock/<code>/` and replace the
+   screenshots with ones taken in that language. Keep the file names identical.
+3. Add one line to `LANGS` at the top of `assets/js/i18n.js`:
 
 ```js
 var LANGS = [
@@ -146,6 +149,11 @@ var LANGS = [
 
 The header switcher, the `lang` attribute and the `og:locale` meta tag update
 themselves from that list.
+
+One more place needs the new code: the inline script in the head of `index.html`
+keeps a short copy of the language list, so it can preload the hero screenshot
+before `i18n.js` has run. Leaving it out is not a breakage, the visitor just
+downloads one screenshot they never see.
 
 `policy/` and `imprint/` are standalone pages and are not part of this system.
 The privacy policy exists twice, as `policy/` and `policy/de/`, each a complete
@@ -164,28 +172,35 @@ Every phone on the page uses the same markup:
 <div class="device">
   <div class="device__frame">
     <div class="device__screen">
-      <img src="assets/images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt=""
+      <img data-shot="home_1" data-i18n-alt="hero.shotAlt" alt=""
            width="1206" height="2622">
     </div>
   </div>
 </div>
 ```
 
-Drop a new file into `assets/images/mock/` and change the `src`. Screenshots
-with the 402 : 874 aspect ratio of an iPhone 16 Pro fit without cropping.
+There is no `src` in the markup. `data-shot` names the screen, and `i18n.js`
+builds the path as `assets/images/mock/<language>/<shot>.png` when it paints,
+so the screenshots change language along with the text. Every shot therefore
+has to exist under the same name in every folder.
+
+To replace one, drop the new file into each language folder, keeping the name.
+Screenshots with the 402 : 874 aspect ratio of an iPhone 16 Pro fit without
+cropping.
 
 Each of these images has a `<!-- SWAP: … -->` comment above it naming the screen
 it shows, because the file names alone do not say which is which:
 
-| Comment | File |
+| Comment | `data-shot` |
 | --- | --- |
-| today screen | `home_1.png` |
-| what is shaping her day | `home_3.png` |
-| check-in history | `checkin_1.png` |
-| five day outlook | `home_2.png` |
-| reminders | `reminders_1.png` |
-| a saved moment in the calendar | `calendar_2.png` |
-| partner page | `partner_1.png` |
+| today screen | `home_1` |
+| what is shaping her day | `home_3` |
+| check-in history | `checkIns` |
+| five day outlook | `home_2` |
+| reminders | `reminders` |
+| a saved moment in the calendar | `calendar_detail` |
+| partner page | `partner` |
+| calendar month | `calendar` |
 
 Phone size is set per section through the `--dw` custom property. The frame
 corner radii scale off it, so changing one value keeps the proportions.

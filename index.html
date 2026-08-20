@@ -27,7 +27,6 @@
 <link rel="icon" href="assets/images/logo/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/images/logo/icon.png">
 
-<link rel="preload" as="image" href="assets/images/mock/home_1.png">
 <link rel="stylesheet" href="assets/css/main.css">
 
 <script>
@@ -44,6 +43,44 @@
     /* an iPad on iPadOS 13+ introduces itself as a Mac */
     if (!apple && /Mac/i.test(platform) && navigator.maxTouchPoints > 1) apple = true;
     document.documentElement.classList.add(apple ? "os-apple" : "os-android");
+  })();
+
+  /* The screenshots come in one folder per language, so the hero shot can
+     only be preloaded once we know which one. i18n.js makes the real
+     choice a moment later, this is just an early guess by the same rules,
+     and a miss costs one unused image. Keep SHOTS and KEY in step with
+     LANGS and STORAGE_KEY in assets/js/i18n.js. */
+  (function () {
+    var SHOTS = ["de", "en"];
+    var KEY = "phaseparadise-lang";
+    var FALLBACK = "en";
+
+    function has(code) {
+      for (var i = 0; i < SHOTS.length; i++) {
+        if (SHOTS[i] === code) return true;
+      }
+      return false;
+    }
+
+    var code = null;
+    try {
+      code = localStorage.getItem(KEY);
+    } catch (e) {}
+
+    if (!has(code)) {
+      var list = navigator.languages || [navigator.language || ""];
+      code = FALLBACK;
+      for (var i = 0; i < list.length; i++) {
+        var base = String(list[i]).toLowerCase().split("-")[0];
+        if (has(base)) { code = base; break; }
+      }
+    }
+
+    var link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = "assets/images/mock/" + code + "/home_1.png";
+    document.head.appendChild(link);
   })();
 </script>
 <noscript>
@@ -105,7 +142,7 @@
       <div class="device__frame">
         <div class="device__screen">
           <!-- SWAP: today screen -->
-          <img src="assets/images/mock/home_1.png" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
+          <img data-shot="home_1" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
         </div>
       </div>
     </div>
@@ -125,7 +162,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: what is shaping her day -->
-            <img src="assets/images/mock/home_3.png" data-i18n-alt="benefits.one.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="home_3" data-i18n-alt="benefits.one.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -142,7 +179,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: check-in history -->
-            <img src="assets/images/mock/checkin_1.png" data-i18n-alt="benefits.two.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="checkIns" data-i18n-alt="benefits.two.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -159,7 +196,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: five day outlook -->
-            <img src="assets/images/mock/home_2.png" data-i18n-alt="benefits.three.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="home_2" data-i18n-alt="benefits.three.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -252,7 +289,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: reminders -->
-            <img src="assets/images/mock/reminders_1.png" data-i18n-alt="insights.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="reminders" data-i18n-alt="insights.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -277,7 +314,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: a saved moment in the calendar -->
-            <img src="assets/images/mock/calendar_2.png" data-i18n-alt="partner.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="calendar_detail" data-i18n-alt="partner.shotAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -286,7 +323,7 @@
         <div class="device__frame">
           <div class="device__screen">
             <!-- SWAP: partner page -->
-            <img src="assets/images/mock/partner_1.png" data-i18n-alt="partner.ui.alt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+            <img data-shot="partner" data-i18n-alt="partner.ui.alt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -313,17 +350,17 @@
     <div class="lineup" data-reveal>
       <div class="lineup__item lineup__item--side">
         <div class="device"><div class="device__frame"><div class="device__screen">
-          <img src="assets/images/mock/calendar_1.png" data-i18n-alt="cta.calendarAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+          <img data-shot="calendar" data-i18n-alt="cta.calendarAlt" alt="" width="1206" height="2622" loading="lazy" decoding="async">
         </div></div></div>
       </div>
       <div class="lineup__item lineup__item--mid">
         <div class="device"><div class="device__frame"><div class="device__screen">
-          <img src="assets/images/mock/home_1.png" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+          <img data-shot="home_1" alt="" width="1206" height="2622" loading="lazy" decoding="async">
         </div></div></div>
       </div>
       <div class="lineup__item lineup__item--side">
         <div class="device"><div class="device__frame"><div class="device__screen">
-          <img src="assets/images/mock/reminders_1.png" alt="" width="1206" height="2622" loading="lazy" decoding="async">
+          <img data-shot="reminders" alt="" width="1206" height="2622" loading="lazy" decoding="async">
         </div></div></div>
       </div>
     </div>

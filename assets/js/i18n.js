@@ -5,8 +5,13 @@
    the page and doubles as the safety net: if any other language file is
    missing or broken, the whole page simply stays English.
 
-   To add a language: drop in assets/locales/<code>.js and add one line to
-   LANGS below. The switcher in the header builds itself from that list.
+   The screenshots follow the same idea: assets/images/mock/<code>/ holds
+   one folder per language, with the same filenames in each.
+
+   To add a language: drop in assets/locales/<code>.js, copy the screenshot
+   folder, and add one line to LANGS below. The switcher in the header
+   builds itself from that list. (index.html carries a short copy of the
+   language list, for preloading the hero shot before this file runs.)
    ══════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
@@ -20,6 +25,7 @@
   var BASE = "en";
   var STORAGE_KEY = "phaseparadise-lang";
   var DIR = "assets/locales/";
+  var SHOTS = "assets/images/mock/";
   var GIVE_UP_AFTER = 4000;
 
   var root = document.documentElement;
@@ -122,6 +128,19 @@
     if (title) document.title = title;
   }
 
+  /* ────────────────────────────────────────────────────── the screenshots */
+  /* every shot exists once per language, under the same name, so the
+     folder is all that changes */
+  function shots(code) {
+    var nodes = document.querySelectorAll("[data-shot]");
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].setAttribute(
+        "src",
+        SHOTS + code + "/" + nodes[i].getAttribute("data-shot") + ".png"
+      );
+    }
+  }
+
   /* ──────────────────────────────────────────────────────── the switcher */
   function buildSwitcher(dict) {
     var host = document.getElementById("langSwitch");
@@ -159,6 +178,7 @@
     current = lang.code;
 
     root.setAttribute("lang", lang.html);
+    shots(lang.code);
     fill(dict, bank()[BASE] || {});
     buildSwitcher(dict);
 
