@@ -33,6 +33,18 @@
 <script>
   /* set before first paint, so the page never flashes its empty state */
   document.documentElement.classList.add("js", "i18n-pending");
+
+  /* Which store can this visitor actually use. Apple devices keep the App
+     Store badge, everyone else is sent to Google Play. Only the nav and the
+     hero swap, the closing CTA always shows both. */
+  (function () {
+    var ua = navigator.userAgent || "";
+    var platform = navigator.platform || "";
+    var apple = /iPhone|iPad|iPod|Macintosh/i.test(ua) && !/Android/i.test(ua);
+    /* an iPad on iPadOS 13+ introduces itself as a Mac */
+    if (!apple && /Mac/i.test(platform) && navigator.maxTouchPoints > 1) apple = true;
+    document.documentElement.classList.add(apple ? "os-apple" : "os-android");
+  })();
 </script>
 <noscript>
   <style>.nav__inner, main, .foot { display: none !important; }</style>
@@ -55,8 +67,11 @@
 
     <div class="nav__end">
       <div class="lang" id="langSwitch" role="group"></div>
-      <a class="badge badge--sm" href="https://apps.apple.com/at/app/phasebloom-cycle-tracker/id6761731649" data-i18n-aria="nav.appStore">
+      <a class="badge badge--sm badge--apple" href="https://apps.apple.com/at/app/phasebloom-cycle-tracker/id6761731649" data-i18n-aria="nav.appStore">
         <img src="assets/images/badges/app-store.svg" data-i18n-alt="nav.appStoreAlt" alt="Download on the App Store" width="140" height="47">
+      </a>
+      <a class="badge badge--sm badge--android" href="https://play.google.com/store/apps/details?id=com.monkeyttack.phaseBloom" data-i18n-aria="nav.googlePlay">
+        <img src="assets/images/badges/google-play.svg" data-i18n-alt="nav.googlePlayAlt" alt="Get it on Google Play" width="140" height="47">
       </a>
     </div>
   </div>
@@ -76,8 +91,11 @@
     </h1>
     <p class="lede hero__lede" data-i18n="hero.lede"></p>
     <div class="hero__cta">
-      <a class="badge" href="https://apps.apple.com/at/app/phasebloom-cycle-tracker/id6761731649" data-i18n-aria="nav.appStore">
+      <a class="badge badge--apple" href="https://apps.apple.com/at/app/phasebloom-cycle-tracker/id6761731649" data-i18n-aria="nav.appStore">
         <img src="assets/images/badges/app-store.svg" data-i18n-alt="nav.appStoreAlt" alt="Download on the App Store" width="180" height="60">
+      </a>
+      <a class="badge badge--android" href="https://play.google.com/store/apps/details?id=com.monkeyttack.phaseBloom" data-i18n-aria="nav.googlePlay">
+        <img src="assets/images/badges/google-play.svg" data-i18n-alt="nav.googlePlayAlt" alt="Get it on Google Play" width="180" height="60">
       </a>
     </div>
   </div>

@@ -332,12 +332,6 @@ em {
   .nav__brand { --logo-h: 26px; --logo-top: 4.6px; height: 15px; }
   .lang { font-size: 0.6875rem; }
 }
-/* below this the bar cannot hold all three, and the hero CTA is right
-   underneath anyway */
-@media (max-width: 400px) {
-  .nav .badge--sm { display: none; }
-}
-
 /* ──────────────────────────────────────────────────────────── BADGE */
 .badge {
   display: inline-block;
@@ -351,6 +345,19 @@ em {
 }
 .badge:active { transform: translateY(0); }
 .badge:focus-visible { outline-offset: 6px; }
+
+/* One store per visitor. The nav and the hero carry both badges and hide
+   the one the device cannot use, App Store on Apple, Google Play on the
+   rest. The closing CTA carries no modifier, so it keeps showing both. */
+.badge--android { display: none; }
+.os-android .badge--apple { display: none; }
+.os-android .badge--android { display: inline-block; }
+
+/* below this the bar cannot hold all three, and the hero CTA is right
+   underneath anyway */
+@media (max-width: 400px) {
+  .nav .badge--sm { display: none; }
+}
 
 /* ─────────────────────────────────────────────────────────── DEVICE */
 .device {
