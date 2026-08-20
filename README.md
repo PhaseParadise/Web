@@ -33,7 +33,15 @@ Key points:
 
 ## Requirements
 
-A text editor and a browser. Nothing else.
+A text editor and a browser. Nothing else, as long as you are editing text,
+styles or behaviour.
+
+**Replacing a screenshot needs one tool**, because the files the page loads are
+generated from the originals:
+
+```bash
+brew install webp          # once, gives you cwebp
+```
 
 A static web server is optional. Python 3 ships with macOS and most Linux
 distributions and is enough if you want one.
@@ -58,8 +66,27 @@ python3 -m http.server 8000
 Then open <http://localhost:8000>.
 
 Editing the page needs no install step and no watch task: change a file, reload
-the browser. The one thing that is generated is the screenshots, and only when
-you replace them — see [Screenshots](#replacing-screenshots).
+the browser.
+
+### Do not forget: screenshots are generated
+
+The page does **not** load the PNG files you drop in. It loads `.webp` files
+built from them. Put the original in `assets/images/mock/_src/<language>/`,
+then run:
+
+```bash
+./tools/build-shots.sh
+```
+
+Then commit three things: the new PNG, the generated `.webp`, and the updated
+`tools/shots.lock`.
+
+Skip this and the page keeps showing the old screenshot, or an empty phone if
+the file is new. CI catches it on push, but only after the fact — running the
+script is the shorter path. `./tools/build-shots.sh --check` tells you where
+you stand without changing anything.
+
+Details in [Replacing screenshots](#replacing-screenshots).
 
 ## Project structure
 
@@ -69,9 +96,11 @@ you replace them — see [Screenshots](#replacing-screenshots).
 ├── .nojekyll               tells GitHub Pages to serve files as-is
 ├── .lighthouserc.json      performance budget CI holds the page to
 ├── .github/workflows/      CI: screenshots current, budget met
+├── favicon.ico             16/32/48, asked for by convention, not linked
 ├── tools/
 │   ├── build-shots.sh      originals → the WebP the page loads
-│   └── shots.lock          which original each WebP was built from
+│   ├── shots.lock          which original each WebP was built from
+│   └── build-icons.py      logo → favicon set (run by hand, needs Pillow)
 ├── index.html              landing page
 ├── policy/index.html       privacy policy, English (standalone)
 ├── policy/de/index.html    privacy policy, German (standalone)
@@ -277,6 +306,35 @@ apply:
 The page runs light. `#phases` and `#cta` are dark on purpose, so the phase
 colours glow the way they do inside the app. The nav bar detects those two
 sections and swaps to the dark wordmark while it sits over them.
+
+### Icons and the favicon
+
+Every icon is generated from `assets/images/logo/icon.png` by
+`tools/build-icons.py`, and all of them are square. That is not cosmetic:
+**Google only accepts a square favicon** and shows its default globe for
+anything else. The source mark is 604 × 544, which is why search results
+carried a globe rather than the logo.
+
+Two more things the script handles, and that are easy to get wrong by hand:
+
+- Favicons are masked into a circle. The source glyph touches all four edges,
+  so it is scaled to 78 % of the tile and centred, which keeps the corners
+  inside the mask.
+- The middle of the mark is transparent, not white. Every icon is therefore
+  composited onto the site background (`#F8F9FA`) and saved without an alpha
+  channel — iOS composites a transparent apple-touch-icon onto black.
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install Pillow
+.venv/bin/python tools/build-icons.py
+```
+
+Pillow is needed only for this. It is deliberately not part of CI, because the
+logo changes about once a year. `.venv/` is ignored by git.
+
+A changed favicon does not appear in search results right away. Google refreshes
+it when it next crawls the home page, which takes days to weeks; requesting
+indexing in Search Console shortens that.
 
 ### Store links and badges
 

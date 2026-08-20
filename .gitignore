@@ -1,3 +1,4 @@
 .DS_Store
 .lighthouseci/
 tools/.shots.lock.new
+.venv/
