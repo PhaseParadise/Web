@@ -1,0 +1,11 @@
+# The site itself has no dependencies. The workflows do, in the shape of
+# pinned action versions, and those go stale quietly. One PR a month is
+# enough to keep them current.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci

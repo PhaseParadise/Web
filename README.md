@@ -57,8 +57,9 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000>.
 
-There is no install step, no watch task and no compilation. Edit a file, reload
-the browser.
+Editing the page needs no install step and no watch task: change a file, reload
+the browser. The one thing that is generated is the screenshots, and only when
+you replace them — see [Screenshots](#replacing-screenshots).
 
 ## Project structure
 
@@ -66,6 +67,11 @@ the browser.
 .
 ├── CNAME                   custom domain for GitHub Pages
 ├── .nojekyll               tells GitHub Pages to serve files as-is
+├── .lighthouserc.json      performance budget CI holds the page to
+├── .github/workflows/      CI: screenshots current, budget met
+├── tools/
+│   ├── build-shots.sh      originals → the WebP the page loads
+│   └── shots.lock          which original each WebP was built from
 ├── index.html              landing page
 ├── policy/index.html       privacy policy, English (standalone)
 ├── policy/de/index.html    privacy policy, German (standalone)
@@ -84,8 +90,11 @@ the browser.
     └── images/
         ├── badges/         App Store and Google Play badges (SVG)
         ├── logo/           wordmark, stacked wordmark and icon
-        ├── mock/           app screenshots, one folder per language
-        │                   (`de/`, `en/`), 1206 × 2622 (iPhone 16 Pro @3x)
+        ├── mock/
+        │   ├── _src/       screenshot originals, PNG at 1206 × 2622,
+        │   │               one folder per language. Never loaded.
+        │   ├── de/         built WebP at 960 px, this is what ships
+        │   └── en/
         └── og/             link preview image, 1200 × 630
 ```
 
@@ -135,8 +144,10 @@ an empty element.
 
 1. Copy `assets/locales/en.js` to `assets/locales/<code>.js` and translate the
    values. Keep the keys identical; any key you leave out falls back to English.
-2. Copy `assets/images/mock/en/` to `assets/images/mock/<code>/` and replace the
-   screenshots with ones taken in that language. Keep the file names identical.
+2. Copy `assets/images/mock/_src/en/` to `assets/images/mock/_src/<code>/` and
+   replace the originals with screenshots taken in that language. Keep the file
+   names identical, then run `./tools/build-shots.sh` to generate what the page
+   will actually load.
 3. Add one line to `LANGS` at the top of `assets/js/i18n.js`:
 
 ```js
@@ -180,13 +191,32 @@ Every phone on the page uses the same markup:
 ```
 
 There is no `src` in the markup. `data-shot` names the screen, and `i18n.js`
-builds the path as `assets/images/mock/<language>/<shot>.png` when it paints,
+builds the path as `assets/images/mock/<language>/<shot>.webp` when it paints,
 so the screenshots change language along with the text. Every shot therefore
-has to exist under the same name in every folder.
+has to exist under the same name in every language folder. The image fades up
+over the black panel once it arrives; on a language switch the shot that is up
+stays visible until its replacement has loaded, so there is no blink.
 
-To replace one, drop the new file into each language folder, keeping the name.
+**The files the page loads are generated.** Put the original PNG, at whatever
+size your device produced, into `assets/images/mock/_src/<language>/`, then:
+
+```sh
+brew install webp          # once
+./tools/build-shots.sh
+```
+
+That writes `assets/images/mock/<language>/<name>.webp` at 960 px and quality
+80 — three times the largest size any phone on the page is drawn at, which is
+where the encoder stops buying visible detail. It cuts roughly 88 % off a PNG:
+the whole set went from 3.0 MB to 382 KB without a visible difference.
+
+Run it as often as you like. `tools/shots.lock` records the hash of the
+original each WebP was built from, so a second run does nothing, and a
+screenshot you replaced is the only one re-encoded. `--check` reports
+without writing, which is what CI runs.
+
 Screenshots with the 402 : 874 aspect ratio of an iPhone 16 Pro fit without
-cropping.
+cropping. Commit both the original and the built file.
 
 Each of these images has a `<!-- SWAP: … -->` comment above it naming the screen
 it shows, because the file names alone do not say which is which:
@@ -276,7 +306,50 @@ Two files control this:
 - `.nojekyll` stops GitHub Pages from running Jekyll, so files and directories
   beginning with an underscore are served unchanged.
 
-There is nothing to build before deploying.
+There is nothing to build before deploying: the generated screenshots are
+committed, so what is in the branch is what goes live. `_src/` ships along with
+everything else — `.nojekyll` means nothing is filtered out — but no page ever
+requests it, so it costs storage and not bandwidth.
+
+### What CI checks
+
+`.github/workflows/ci.yml` runs on every push and pull request.
+
+**Screenshots current.** `./tools/build-shots.sh --check` compares every
+original in `_src/` against `tools/shots.lock` and fails if a screenshot was
+replaced without rebuilding, if a `.webp` is missing, or if one is left over
+from an original that was deleted. Timestamps are deliberately not used: a
+fresh clone gives every file the same one, and two machines rarely agree on
+the exact bytes an encoder produces, so the check goes by content hash and
+reaches the same verdict everywhere.
+
+**Performance budget.** Lighthouse runs three times against the page and
+asserts the numbers in `.lighthouserc.json`. The report is kept as a workflow
+artifact for two weeks; nothing is uploaded to a third party. The thresholds
+sit about 15 % above what the page measures today, which is loose enough to
+ignore noise and tight enough that re-introducing a full-size PNG fails the
+build. **When a change makes the page faster, lower them** — a budget nobody
+tightens stops meaning anything.
+
+Measured on the reference page, mobile profile with Lighthouse's 4G
+throttling:
+
+| | before | now |
+| --- | --- | --- |
+| Performance | 88 | 89 |
+| Largest Contentful Paint | 3.8 s | 3.6 s |
+| Cumulative Layout Shift | 0 | 0 |
+| Page weight | 1936 KiB | 546 KiB |
+
+Page weight is where the work landed. LCP barely moved, and the reason is
+worth knowing before anyone spends another day on images: `.i18n-pending body
+{ opacity: 0 }` in `main.css` keeps the whole page invisible until `i18n.js`
+has filled the text in, so the first paint waits on JavaScript no matter how
+small the images get. Measured on a copy with that rule removed, LCP drops to
+2.9 s and the score reaches 93. Shortening the fade does nothing — it is the
+waiting, not the transition. Fixing it properly means delivering the text in
+the HTML instead of filling it in at runtime, which means building one page
+per language.
 
 ## Accessibility and browser support
 

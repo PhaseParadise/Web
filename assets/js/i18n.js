@@ -6,7 +6,8 @@
    missing or broken, the whole page simply stays English.
 
    The screenshots follow the same idea: assets/images/mock/<code>/ holds
-   one folder per language, with the same filenames in each.
+   one folder per language, with the same filenames in each. Those files
+   are built from the originals in mock/_src/ by tools/build-shots.sh.
 
    To add a language: drop in assets/locales/<code>.js, copy the screenshot
    folder, and add one line to LANGS below. The switcher in the header
@@ -26,6 +27,7 @@
   var STORAGE_KEY = "phaseparadise-lang";
   var DIR = "assets/locales/";
   var SHOTS = "assets/images/mock/";
+  var SHOT_EXT = ".webp";
   var GIVE_UP_AFTER = 4000;
 
   var root = document.documentElement;
@@ -129,14 +131,27 @@
   }
 
   /* ────────────────────────────────────────────────────── the screenshots */
+  /* a shot sits on a black panel, so it fades in instead of appearing.
+     only the first one does: on a language switch the shot that is up
+     stays visible until its replacement has arrived, which reads better
+     than a blink through black. */
+  function reveal(img) {
+    if (img.classList.contains("is-loaded")) return;
+    function done() { img.classList.add("is-loaded"); }
+    img.addEventListener("load", done, { once: true });
+    /* a file that will not come should not leave a hole in the layout */
+    img.addEventListener("error", done, { once: true });
+  }
+
   /* every shot exists once per language, under the same name, so the
      folder is all that changes */
   function shots(code) {
     var nodes = document.querySelectorAll("[data-shot]");
     for (var i = 0; i < nodes.length; i++) {
+      reveal(nodes[i]);
       nodes[i].setAttribute(
         "src",
-        SHOTS + code + "/" + nodes[i].getAttribute("data-shot") + ".png"
+        SHOTS + code + "/" + nodes[i].getAttribute("data-shot") + SHOT_EXT
       );
     }
   }

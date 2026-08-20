@@ -393,6 +393,16 @@ em {
   object-fit: cover;
 }
 
+/* A shot has no src until i18n.js knows the language, so it lands a moment
+   after its frame. It fades up over the black panel instead of snapping in.
+   Tied to .js, so with scripting off nothing can stay stuck at zero, and the
+   reduced-motion block below flattens the transition to nothing. */
+.js .device__screen > img {
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+.js .device__screen > img.is-loaded { opacity: 1; }
+
 /* glass sheen across the panel */
 .device__screen::after {
   content: "";

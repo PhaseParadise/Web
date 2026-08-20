@@ -1,0 +1,27 @@
+{
+  "//": "Budget for the landing page. The numbers sit roughly 15 % above what the page measures today, so CI stays quiet on noise and speaks up on a real regression. Tighten them whenever a change makes the page faster, otherwise the budget slowly stops meaning anything.",
+  "ci": {
+    "collect": {
+      "startServerCommand": "python3 -m http.server 8080",
+      "startServerReadyPattern": "Serving HTTP",
+      "url": ["http://localhost:8080/index.html"],
+      "numberOfRuns": 3,
+      "settings": {
+        "onlyCategories": ["performance"]
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", { "minScore": 0.85 }],
+        "largest-contentful-paint": ["error", { "maxNumericValue": 4200 }],
+        "cumulative-layout-shift": ["error", { "maxNumericValue": 0.05 }],
+        "total-blocking-time": ["error", { "maxNumericValue": 200 }],
+        "total-byte-weight": ["error", { "maxNumericValue": 700000 }]
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}

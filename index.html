@@ -79,7 +79,8 @@
     var link = document.createElement("link");
     link.rel = "preload";
     link.as = "image";
-    link.href = "assets/images/mock/" + code + "/home_1.png";
+    link.fetchPriority = "high";
+    link.href = "assets/images/mock/" + code + "/home_1.webp";
     document.head.appendChild(link);
   })();
 </script>
@@ -142,7 +143,8 @@
       <div class="device__frame">
         <div class="device__screen">
           <!-- SWAP: today screen -->
-          <img data-shot="home_1" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622">
+          <img data-shot="home_1" data-i18n-alt="hero.shotAlt" alt="" width="1206" height="2622"
+               fetchpriority="high" decoding="async">
         </div>
       </div>
     </div>

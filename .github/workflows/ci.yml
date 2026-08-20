@@ -1,0 +1,56 @@
+# Two things this repo cannot check by looking at the diff: whether the
+# screenshots that ship were built from the originals that are committed,
+# and whether the page still loads as fast as it did yesterday. Both are
+# easy to break without noticing, so both run on every push.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    name: Screenshots aktuell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only the check needs no encoder, but the failure message tells you
+      # to run the build, and that is easier to trust if CI could have.
+      - name: cwebp installieren
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends webp
+
+      # Compares the hash of every original in _src/ against tools/shots.lock.
+      # Fails if a screenshot was replaced without rebuilding, if a .webp is
+      # missing, or if one is left over from a deleted original.
+      - name: Gegen die Originale prüfen
+        run: ./tools/build-shots.sh --check
+
+  lighthouse:
+    name: Performance-Budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Three runs, median taken, asserted against .lighthouserc.json.
+      # The report stays in the repo's artifacts, nothing is uploaded to
+      # a third party.
+      - name: Lighthouse
+        run: npx --yes @lhci/cli@0.15.x autorun
+
+      - name: Bericht als Artefakt ablegen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: .lighthouseci/
+          retention-days: 14
