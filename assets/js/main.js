@@ -139,6 +139,12 @@
   var RUNWAY = 2.6;
   var lastWidth = window.innerWidth;
 
+  /* one place to take the page's measurements again */
+  function remeasure() {
+    measureHeroLagRoom();
+    sizeRunway();
+  }
+
   function sizeRunway() {
     if (!track || reduced.matches) return;
     track.style.height = Math.round(window.innerHeight * (1 + RUNWAY)) + "px";
@@ -146,7 +152,23 @@
 
   /* ─────────────────────────────────────────────────────── parallax */
   var floaters = Array.prototype.slice.call(document.querySelectorAll("[data-parallax]"));
+  var hero = document.getElementById("hero");
   var heroDevice = document.querySelector(".device--hero");
+
+  /* the hero section hides its overflow, so the glow stays inside it. that
+     same edge would slice the phone in half once the lag below has carried
+     it far enough down, so the lag never gets more room than the phone
+     actually has. read from the layout box, which no transform touches, so
+     the entrance animation cannot throw the figure off. */
+  var heroLagRoom = 0;
+
+  function measureHeroLagRoom() {
+    heroLagRoom = 0;
+    if (!hero || !heroDevice) return;
+    var top = 0;
+    for (var el = heroDevice; el && el !== hero; el = el.offsetParent) top += el.offsetTop;
+    heroLagRoom = Math.max(0, hero.offsetHeight - top - heroDevice.offsetHeight - 2);
+  }
 
   function paintParallax() {
     var vh = window.innerHeight;
@@ -158,8 +180,9 @@
       if (el === heroDevice) {
         /* the hero phone lags behind the page, and recedes a little */
         var p = clamp(y / vh, 0, 1.2);
+        var lag = clamp(y * f, 0, heroLagRoom);
         el.style.transform =
-          "translate3d(0," + (y * f).toFixed(1) + "px,0) scale(" + (1 - p * 0.05).toFixed(4) + ")";
+          "translate3d(0," + lag.toFixed(1) + "px,0) scale(" + (1 - p * 0.05).toFixed(4) + ")";
         return;
       }
 
@@ -201,7 +224,7 @@
     /* ignore the address bar growing and shrinking on mobile */
     if (window.innerWidth === lastWidth) return;
     lastWidth = window.innerWidth;
-    sizeRunway();
+    remeasure();
     onScroll();
   }
 
@@ -217,7 +240,7 @@
       }, { passive: true });
       return;
     }
-    sizeRunway();
+    remeasure();
     paintRing(0);
     frame();
   }
@@ -233,12 +256,12 @@
 
   /* fonts land late and can shift the runway a touch */
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { sizeRunway(); onScroll(); });
+    document.fonts.ready.then(function () { remeasure(); onScroll(); });
   }
 
   /* a language change rewrites every headline, so measure again */
   document.addEventListener("pp:i18n", function () {
-    sizeRunway();
+    remeasure();
     onScroll();
   });
 
